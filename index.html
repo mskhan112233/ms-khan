@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Ultimate 3D Portfolio — Upgraded</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+  /* ---------------------------
+     Reset & base
+     --------------------------- */
+  * { box-sizing: border-box; margin:0; padding:0; }
+  html,body { height:100%; }
+  body {
+    font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    background: linear-gradient(135deg,#1d2b64,#f8cdda,#43cea2,#185a9d,#ff6a00,#ee0979);
+    background-size: 900% 900%;
+    animation: bgMove 25s linear infinite;
+    color: #fff;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    overflow-x:hidden;
+    perspective:1600px;
+  }
+  @keyframes bgMove {
+    0%{ background-position:0% 50% }
+    50%{ background-position:100% 50% }
+    100%{ background-position:0% 50% }
+  }
+
+  /* ---------------------------
+     Layout: Sidebar + Main
+     --------------------------- */
+  .sidebar {
+    position: fixed; left:0; top:0; bottom:0;
+    width:280px; padding:22px;
+    background: linear-gradient(180deg, rgba(8,8,12,0.95), rgba(2,46,79,0.2));
+    border-right: 3px solid rgba(0,198,255,0.6);
+    backdrop-filter: blur(10px);
+    display:flex; flex-direction:column; align-items:center;
+    gap:12px; z-index:1200;
+    transform-origin:left center;
+    box-shadow: 10px 0 40px rgba(0,198,255,0.12);
+  }
+  .sidebar .avatar {
+    width:116px; height:116px; border-radius:50%;
+    border: 4px solid #00c6ff; overflow:hidden;
+    box-shadow: 0 0 30px rgba(0,198,255,0.6), 0 0 60px rgba(255,106,0,0.12);
+    transform-style:preserve-3d; animation: avatarFloat 5s ease-in-out infinite;
+  }
+  .sidebar .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  @keyframes avatarFloat {
+    0%{ transform:translateY(0) rotateY(0) }
+    50%{ transform:translateY(-12px) rotateY(18deg) }
+    100%{ transform:translateY(0) rotateY(0) }
+  }
+
+  .brand {
+    font-weight:800; letter-spacing:1px; text-transform:uppercase;
+    background: linear-gradient(90deg,#ff6a00,#ee0979,#00c6ff,#43cea2);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    text-align:center;
+    text-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  }
+
+  .nav {
+    width:100%; margin-top:6px; display:flex; flex-direction:column; gap:8px;
+  }
+  .nav a {
+    display:flex; align-items:center; gap:10px;
+    padding:11px 14px; color:#dfefff; text-decoration:none;
+    border-radius:10px; background:rgba(255,255,255,0.02); transition: all .32s;
+    transform-style:preserve-3d;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25) inset;
+  }
+  .nav a .icon { width:30px; text-align:center; font-size:18px; transform: translateZ(18px); }
+  .nav a:hover {
+    color:#111; background:linear-gradient(135deg,#00c6ff,#ff6a00,#ee0979);
+    transform: translateY(-6px) rotateY(14deg) scale(1.03);
+    box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+  }
+  .nav a.active { background: linear-gradient(135deg,#00c6ff,#ff6a00); color:#111; font-weight:700; }
+
+  /* sidebar tools */
+  .tools { margin-top: auto; width:100%; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+  .btn {
+    background: linear-gradient(135deg,#43cea2,#185a9d);
+    border:none; color:white; padding:8px 12px; border-radius:10px; cursor:pointer;
+    font-weight:600; box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    transition: transform .22s, box-shadow .22s, filter .22s;
+  }
+  .btn:hover { transform: translateY(-6px) scale(1.03); filter:brightness(1.05); }
+
+  /* hamburger (mobile) */
+  .menu-toggle {
+    display:none; position:fixed; right:18px; top:18px; z-index:1600;
+    width:54px; height:54px; border-radius:50%; border:none; cursor:pointer;
+    background:linear-gradient(135deg,#ff6a00,#ee0979); color:#fff; box-shadow:0 12px 36px rgba(0,0,0,0.35);
+  }
+
+  /* Main content */
+  .main {
+    margin-left:320px; padding:36px; min-height:100vh; transition: margin-left .28s;
+  }
+  main .hero {
+    display:grid; grid-template-columns: 1fr 420px; gap:28px; align-items:center;
+  }
+  /* Left hero text */
+  .hero .lead {
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    padding:28px; border-radius:16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    transform-style: preserve-3d;
+  }
+  .lead h1 {
+    font-size:2.6rem; line-height:1.02; margin-bottom:12px;
+    background: linear-gradient(90deg,#00c6ff,#ff6a00,#ee0979,#43cea2);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    text-shadow: 0 6px 30px rgba(0,0,0,0.35);
+    transform-origin:center;
+    animation: titleFloat 6s ease-in-out infinite;
+  }
+  @keyframes titleFloat {
+    0%{ transform: translateY(0) rotateX(0) }
+    50%{ transform: translateY(-8px) rotateX(6deg) }
+    100%{ transform: translateY(0) rotateX(0) }
+  }
+  .lead p.lead-sub { font-size:1.05rem; opacity:0.95; margin-bottom:18px; }
+
+  /* 3D rotating cube column (right) */
+  .cube-wrap {
+    width:420px; height:320px; display:flex; align-items:center; justify-content:center; perspective:1400px;
+  }
+  .cube {
+    width:220px; height:220px; position:relative; transform-style:preserve-3d;
+    transform: rotateX(-14deg) rotateY(26deg);
+    transition: transform 0.6s ease;
+    animation: cubeSpin 14s linear infinite;
+  }
+  @keyframes cubeSpin {
+    0% { transform: rotateX(-14deg) rotateY(26deg) rotateZ(0deg); }
+    100% { transform: rotateX(-14deg) rotateY(386deg) rotateZ(360deg); }
+  }
+  .cube .face {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    border-radius:12px; font-weight:700; color:#111;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    transform-origin:center;
+  }
+  .cube .f1 { transform: translateZ(110px); background: linear-gradient(135deg,#00c6ff,#43cea2); }
+  .cube .f2 { transform: rotateY(90deg) translateZ(110px); background: linear-gradient(135deg,#ff6a00,#ee0979); }
+  .cube .f3 { transform: rotateY(180deg) translateZ(110px); background: linear-gradient(135deg,#0575e6,#00f260); }
+  .cube .f4 { transform: rotateY(-90deg) translateZ(110px); background: linear-gradient(135deg,#7b61ff,#00d4ff); }
+  .cube .f5 { transform: rotateX(90deg) translateZ(110px); background: linear-gradient(135deg,#ff9a00,#ff5c7a); }
+  .cube .f6 { transform: rotateX(-90deg) translateZ(110px); background: linear-gradient(135deg,#00c6ff,#ff6a00); }
+
+  .cube .face i { font-size:36px; margin-bottom:8px; display:block; }
+  .cube .face span { display:block; font-size:14px; opacity:0.92; }
+
+  /* Section wrapper styling */
+  section.card {
+    margin-top:26px;
+    padding:18px;
+    border-radius:14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+  }
+  section.card h2 { margin-bottom:12px; font-size:1.4rem; }
+
+  /* Gallery grid with tilt effect - uses JS for tilt */
+  .gallery-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:16px; }
+  .gallery-item {
+    background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px; overflow:hidden; padding:12px; cursor:pointer;
+    transform-style:preserve-3d; transition: transform .3s ease, box-shadow .3s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+  }
+  .gallery-item img { width:100%; height:110px; object-fit:contain; display:block; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5)); }
+  .gallery-item .meta { margin-top:10px; text-align:center; color:#e6f7ff; font-weight:600; font-size:0.97rem; }
+
+  /* Services grid: advanced 3D flip cards */
+  .services-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:18px; margin-top:12px; }
+  .flip-card {
+    perspective:1200px; height:220px;
+  }
+  .flip-inner {
+    width:100%; height:100%; position:relative; transition: transform .85s cubic-bezier(.2,.9,.2,1);
+    transform-style:preserve-3d;
+  }
+  .flip-card:hover .flip-inner { transform: rotateY(180deg) translateZ(0); }
+  .flip-front, .flip-back {
+    position:absolute; inset:0; border-radius:12px; backface-visibility:hidden;
+    display:flex; flex-direction:column; justify-content:center; align-items:center; padding:18px;
+    color:#fff;
+  }
+  .flip-front { background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(0,0,0,0.22)); box-shadow: 0 8px 26px rgba(0,0,0,0.6); transform:translateZ(0); }
+  .flip-back { transform:rotateY(180deg); background: linear-gradient(135deg, #00c6ff,#ff6a00); color:#111; }
+
+  /* Resume preview */
+  .resume-box { display:flex; gap:20px; align-items:center; justify-content:center; flex-wrap:wrap; }
+  .resume-preview {
+    width:360px; height:480px; border-radius:12px; overflow:hidden; box-shadow:0 15px 40px rgba(0,0,0,0.6);
+    background:linear-gradient(180deg,#fff,#f6f6f6);
+    color:#111; display:flex; align-items:center; justify-content:center; font-weight:700;
+  }
+  .resume-actions { display:flex; gap:12px; flex-direction:column; }
+
+  /* Fun Button */
+  .fun-button {
+    background: linear-gradient(135deg,#ff6a00,#ee0979); border:none; padding:10px 18px; border-radius:999px; cursor:pointer;
+    font-weight:700; color:#111; box-shadow:0 8px 30px rgba(0,0,0,0.35);
+  }
+
+  /* Footer */
+  footer { position:fixed; bottom:0; left:320px; right:0; padding:12px 20px; background:rgba(11,11,16,0.6); text-align:center; border-top-left-radius:14px; border-top-right-radius:6px; z-index:1100; }
+
+  /* Small screens */
+  @media (max-width: 900px) {
+    .main { margin-left: 240px; padding:28px; }
+    .sidebar { width:240px; }
+    footer { left:240px; }
+  }
+  @media (max-width: 720px) {
+    .menu-toggle { display:block; }
+    .sidebar { transform: translateX(-110%); position:fixed; left:-110%; transition: transform .35s; }
+    .sidebar.active { transform: translateX(0); left:0; box-shadow:22px 0 80px rgba(0,0,0,0.5); }
+    .main { margin-left:0; padding:92px 18px 90px; }
+    footer { left:0; }
+    main .hero { grid-template-columns: 1fr; }
+    .cube-wrap { width:100%; justify-content:center; order: -1; margin-bottom:16px; }
+  }
+
+  /* Accessibility focus */
+  a:focus, button:focus { outline: 3px dashed rgba(255,255,255,0.2); outline-offset:3px; }
+
+  </style>
+</head>
+<body>
+
+  <!-- menu toggle -->
+  <button class="menu-toggle" id="menuToggle" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Main Navigation">
+    <div class="avatar"><img src="479973104_1133770441579185_966814179738217140_n.jpg" alt="Profile"/></div>
+    <div class="brand">My 3D Portfolio</div>
+
+    <nav class="nav" role="navigation" aria-label="Primary">
+      <a href="#" class="active" onclick="showSection('overview', this)"><span class="icon">📌</span><span>Overview</span></a>
+      <a href="#" onclick="showSection('gallery', this)"><span class="icon">🖼</span><span>Gallery</span></a>
+      <a href="#" onclick="showSection('services', this)"><span class="icon">💼</span><span>Services</span></a>
+      <a href="#" onclick="showSection('skills', this)"><span class="icon">🎯</span><span>Skills</span></a>
+      <a href="#" onclick="showSection('resume', this)"><span class="icon">📄</span><span>Resume</span></a>
+      <a href="#" onclick="showSection('contact', this)"><span class="icon">📞</span><span>Contact</span></a>
+      <a href="#" onclick="showSection('fun', this)"><span class="icon">🎲</span><span>Fun</span></a>
+      <a href="#" onclick="showSection('blog', this)"><span class="icon">📝</span><span>Blog</span></a>
+    </nav>
+
+    <div class="tools">
+      <button class="btn" onclick="toggleTheme()" title="Toggle theme">🎨 Theme</button>
+      <button class="btn" onclick="downloadResume()" title="Download resume">⬇ Resume</button>
+      <button class="btn" onclick="randomGlow()" title="Glow">✨ Glow</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <main>
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="lead">
+          <h1 id="heroTitle">Hi — I'm muhammad shoaib a creative developer</h1>
+          <p class="lead-sub" id="typewriter">Building interactive 3D web experiences, modern apps and polished UI/UX.</p>
+
+          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px;">
+            <button class="fun-button" onclick="showSection('services', findNav('services'))">Explore Services</button>
+            <button class="fun-button" onclick="showSection('gallery', findNav('gallery'))">View Projects</button>
+            <button class="fun-button" onclick="scrollToSection('resume')">Download CV</button>
+          </div>
+
+          <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+            <div style="padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.03);">React • Node • Python</div>
+            <div style="padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.03);">UI/UX • 3D CSS</div>
+            <div style="padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.03);">Performance</div>
+          </div>
+        </div>
+
+        <!-- 3D rotating cube -->
+        <div class="cube-wrap" aria-hidden="true">
+          <div class="cube" id="cube">
+            <div class="face f1"><i class="fab fa-html5"></i><span>HTML</span></div>
+            <div class="face f2"><i class="fab fa-css3-alt"></i><span>CSS</span></div>
+            <div class="face f3"><i class="fab fa-js-square"></i><span>JS</span></div>
+            <div class="face f4"><i class="fab fa-react"></i><span>React</span></div>
+            <div class="face f5"><i class="fab fa-node-js"></i><span>Node</span></div>
+            <div class="face f6"><i class="fab fa-python"></i><span>Python</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery Section -->
+      <section id="gallery" class="card" aria-labelledby="galleryTitle">
+        <h2 id="galleryTitle">🖼 Projects — Coding & UI</h2>
+        <p style="text-align:center; margin-bottom:12px; opacity:0.9;">Hover to tilt — tap to open (example images; replace with your screenshots)</p>
+
+        <div class="gallery-grid" id="galleryGrid">
+          <!-- programming logos — replace with your project images for real projects -->
+          <div class="gallery-item" data-title="Project HTML">
+            <img src="https://cdn-icons-png.flaticon.com/512/732/732212.png" alt="HTML Logo">
+            <div class="meta">Project — HTML</div>
+          </div>
+
+          <div class="gallery-item" data-title="Project CSS">
+            <img src="https://cdn-icons-png.flaticon.com/512/732/732190.png" alt="CSS Logo">
+            <div class="meta">Project — CSS Anim</div>
+          </div>
+
+          <div class="gallery-item" data-title="Project JS">
+            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968292.png" alt="JS Logo">
+            <div class="meta">Project — Interactive JS</div>
+          </div>
+
+          <div class="gallery-item" data-title="Project React">
+            <img src="https://cdn-icons-png.flaticon.com/512/1126/1126012.png" alt="React Logo">
+            <div class="meta">Project — React App</div>
+          </div>
+
+          <div class="gallery-item" data-title="Project Node">
+            <img src="https://cdn-icons-png.flaticon.com/512/919/919825.png" alt="Node Logo">
+            <div class="meta">Project — Backend</div>
+          </div>
+
+          <div class="gallery-item" data-title="Project Python">
+            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968350.png" alt="Python Logo">
+            <div class="meta">Project — Data Tools</div>
+          </div>
+
+          <!-- more sample items showing expanded gallery -->
+          <div class="gallery-item" data-title="Project UI">
+            <img src="https://cdn-icons-png.flaticon.com/512/1995/1995525.png" alt="Figma">
+            <div class="meta">Project — UI Design</div>
+          </div>
+
+          <div class="gallery-item" data-title="Project Mobile">
+            <img src="https://cdn-icons-png.flaticon.com/512/888/888869.png" alt="Mobile">
+            <div class="meta">Project — Mobile App</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Services 3D -->
+      <section id="services" class="card" aria-labelledby="servicesTitle">
+        <h2 id="servicesTitle">💼 Services — 3D interactive cards</h2>
+        <p style="text-align:center; margin-bottom:14px; opacity:0.9;">Hover each card to flip and reveal details. Tap on mobile to toggle.</p>
+
+        <div class="services-grid" id="servicesGrid">
+          <!-- flip card 1 -->
+          <div class="flip-card" ontouchstart="this.classList.toggle('hover');">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <i class="fas fa-code" style="font-size:28px;margin-bottom:8px"></i>
+                <div style="font-weight:800;font-size:18px;">Web Development</div>
+                <div style="opacity:0.85;margin-top:8px;">Modern & fast websites</div>
+              </div>
+              <div class="flip-back">
+                <div style="font-weight:800;margin-bottom:8px">Web Development</div>
+                <div style="text-align:center">React, Next.js, accessibility, SEO, performance optimizations, testing & CI/CD.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- flip card 2 -->
+          <div class="flip-card" ontouchstart="this.classList.toggle('hover');">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <i class="fas fa-mobile-alt" style="font-size:28px;margin-bottom:8px"></i>
+                <div style="font-weight:800;font-size:18px;">Mobile Apps</div>
+                <div style="opacity:0.85;margin-top:8px;">Cross-platform</div>
+              </div>
+              <div class="flip-back">
+                <div style="font-weight:800;margin-bottom:8px">Mobile Apps</div>
+                <div style="text-align:center">React Native, Flutter; performant native-like UX, deployment & store publishing.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- flip card 3 -->
+          <div class="flip-card" ontouchstart="this.classList.toggle('hover');">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <i class="fas fa-palette" style="font-size:28px;margin-bottom:8px"></i>
+                <div style="font-weight:800;font-size:18px;">UI / UX Design</div>
+                <div style="opacity:0.85;margin-top:8px;">Concept to prototype</div>
+              </div>
+              <div class="flip-back">
+                <div style="font-weight:800;margin-bottom:8px">UI / UX</div>
+                <div style="text-align:center">Figma flows, prototypes, design systems and micro-interactions for conversion-driven designs.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- flip card 4 -->
+          <div class="flip-card" ontouchstart="this.classList.toggle('hover');">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <i class="fas fa-robot" style="font-size:28px;margin-bottom:8px"></i>
+                <div style="font-weight:800;font-size:18px;">AI / Automation</div>
+                <div style="opacity:0.85;margin-top:8px;">Smart automations</div>
+              </div>
+              <div class="flip-back">
+                <div style="font-weight:800;margin-bottom:8px">AI / Automation</div>
+                <div style="text-align:center">Custom ML pipelines, AI prototypes and automation scripts (data pipelines, bots).</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- flip card 5 -->
+          <div class="flip-card" ontouchstart="this.classList.toggle('hover');">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <i class="fas fa-cloud" style="font-size:28px;margin-bottom:8px"></i>
+                <div style="font-weight:800;font-size:18px;">Cloud & DevOps</div>
+                <div style="opacity:0.85;margin-top:8px;">Scaling & infra</div>
+              </div>
+              <div class="flip-back">
+                <div style="font-weight:800;margin-bottom:8px">Cloud & DevOps</div>
+                <div style="text-align:center">Deploy, scale and automate with containerization and infra as code (AWS / GCP / Azure).</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- flip card 6 -->
+          <div class="flip-card" ontouchstart="this.classList.toggle('hover');">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <i class="fas fa-shield-alt" style="font-size:28px;margin-bottom:8px"></i>
+                <div style="font-weight:800;font-size:18px;">Security</div>
+                <div style="opacity:0.85;margin-top:8px;">Secure by design</div>
+              </div>
+              <div class="flip-back">
+                <div style="font-weight:800;margin-bottom:8px">Security</div>
+                <div style="text-align:center">Threat modeling, secure practices, audits and hardening web apps and APIs.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Skills -->
+      <section id="skills" class="card">
+        <h2>🎯 Skills Snapshot</h2>
+        <p style="text-align:center; opacity:0.9;">Progress bars animate when the section shows — demonstrates skill levels and 3D color fills.</p>
+
+        <div style="display:grid; gap:10px; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); margin-top:14px;">
+          <div style="padding:14px; background:rgba(255,255,255,0.02); border-radius:12px;">
+            <div style="font-weight:800">Frontend</div>
+            <div aria-hidden style="height:10px; background:rgba(255,255,255,0.06); border-radius:8px; margin-top:10px;">
+              <div class="bar" style="width:0; height:10px; border-radius:8px; background:linear-gradient(90deg,#00c6ff,#ff6a00);" data-fill="92%"></div>
+            </div>
+            <div style="opacity:0.8;margin-top:8px">React, HTML5, CSS3, Accessibility</div>
+          </div>
+
+          <div style="padding:14px; background:rgba(255,255,255,0.02); border-radius:12px;">
+            <div style="font-weight:800">Backend</div>
+            <div aria-hidden style="height:10px; background:rgba(255,255,255,0.06); border-radius:8px; margin-top:10px;">
+              <div class="bar" style="width:0; height:10px; border-radius:8px; background:linear-gradient(90deg,#7b61ff,#00d4ff);" data-fill="85%"></div>
+            </div>
+            <div style="opacity:0.8;margin-top:8px">Node.js, Python, Databases</div>
+          </div>
+
+          <div style="padding:14px; background:rgba(255,255,255,0.02); border-radius:12px;">
+            <div style="font-weight:800">Design</div>
+            <div aria-hidden style="height:10px; background:rgba(255,255,255,0.06); border-radius:8px; margin-top:10px;">
+              <div class="bar" style="width:0; height:10px; border-radius:8px; background:linear-gradient(90deg,#ff9a00,#ff5c7a);" data-fill="88%"></div>
+            </div>
+            <div style="opacity:0.8;margin-top:8px">Figma, Prototyping</div>
+          </div>
+
+          <div style="padding:14px; background:rgba(255,255,255,0.02); border-radius:12px;">
+            <div style="font-weight:800">AI</div>
+            <div aria-hidden style="height:10px; background:rgba(255,255,255,0.06); border-radius:8px; margin-top:10px;">
+              <div class="bar" style="width:0; height:10px; border-radius:8px; background:linear-gradient(90deg,#00f260,#0575e6);" data-fill="72%"></div>
+            </div>
+            <div style="opacity:0.8;margin-top:8px">ML, Automation</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Resume -->
+      <section id="resume" class="card">
+        <h2>📄 Resume</h2>
+        <p style="text-align:center; margin-bottom:12px;">Preview & download — link points to <code>resume.pdf</code> file in same folder (replace with your resume).</p>
+        <div class="resume-box">
+          <div class="resume-preview" aria-hidden>Resume preview</div>
+          <div class="resume-actions">
+            <a href="resume.pdf" download style="text-decoration:none;">
+              <button class="fun-button">⬇ Download Resume (PDF)</button>
+            </a>
+            <button class="btn" onclick="alert('Resume preview full-screen - implement as needed')">Preview</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact -->
+      <section id="contact" class="card">
+        <h2>📞 Contact</h2>
+        <p style="text-align:center">Email: <a href="mailto:me@mail.com" style="color:#bfefff">me@mail.com</a> • Phone: (123) 456-7890</p>
+        <p style="text-align:center">LinkedIn • GitHub • Twitter — connect with me!</p>
+      </section>
+
+      <!-- Fun Zone -->
+      <section id="fun" class="card">
+        <h2>🎲 Fun Zone</h2>
+        <p style="text-align:center" id="funText">Click the button for a random fun fact about development or design.</p>
+        <div style="text-align:center; margin-top:12px;"><button class="fun-button" onclick="randomFun()">Get Fun</button></div>
+      </section>
+
+      <!-- Blog / Extra -->
+      <section id="blog" class="card">
+        <h2>📝 Blog & Notes</h2>
+        <p style="text-align:center">Short posts about Web, 3D CSS, performance, and architecture.</p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:12px; margin-top:12px;">
+          <article style="padding:12px; background:rgba(255,255,255,0.02); border-radius:10px;">
+            <h3 style="margin-bottom:8px;">Design Systems</h3>
+            <p style="opacity:0.9;">How designing tokens improves scale and cross-platform consistency.</p>
+          </article>
+          <article style="padding:12px; background:rgba(255,255,255,0.02); border-radius:10px;">
+            <h3 style="margin-bottom:8px;">3D with CSS</h3>
+            <p style="opacity:0.9;">Using transforms, perspective and lighting for micro 3D effects.</p>
+          </article>
+        </div>
+      </section>
+
+    </main>
+  </div>
+<!-- 
+  <footer>© 2025 My Portfolio • Interactive 3D Experience • Responsive</footer> -->
+
+  <script>
+  /* -------------------------
+     Utilities & interactions
+     ------------------------- */
+  function $(s){ return document.querySelector(s); }
+  function $all(s){ return Array.from(document.querySelectorAll(s)); }
+
+  // Show section + nav state
+  function showSection(id, anchorEl) {
+    $all('.content-section, section.card').forEach(s => s.classList.remove('active'));
+    // some sections are main > section elements: add active to element with id
+    const target = document.getElementById(id) || document.querySelector('#' + id);
+    if (target) target.classList.add('active');
+
+    // update nav
+    $all('.nav a').forEach(a => a.classList.remove('active'));
+    if (anchorEl) anchorEl.classList.add('active');
+
+    // animate skill bars when skills shown
+    if (id === 'skills') animateBars();
+  }
+
+  // Find nav anchor by id (helper for buttons)
+  function findNav(name){
+    return $all('.nav a').find(a => a.textContent.trim().toLowerCase().includes(name.toLowerCase()));
+  }
+
+  // Toggle theme (simple inversion of background for demo)
+  function toggleTheme(){
+    if(document.documentElement.hasAttribute('data-dark')){
+      document.documentElement.removeAttribute('data-dark'); // restore
+      document.body.style.filter = '';
+    } else {
+      document.documentElement.setAttribute('data-dark','1');
+      document.body.style.filter = 'saturate(.95) contrast(.95) brightness(.95)';
+    }
+  }
+
+  // Download stub
+  function downloadResume(){ window.open('resume.pdf','_blank'); }
+
+  // random glow on sidebar
+  function randomGlow(){
+    const side = document.getElementById('sidebar');
+    side.style.boxShadow = `12px 0 40px rgba(${rand(0,255)}, ${rand(0,255)}, ${rand(0,255)}, .55)`;
+    setTimeout(()=> side.style.boxShadow = '', 2200);
+  }
+  function rand(a,b){ return Math.floor(Math.random()*(b-a))+a; }
+
+  // typewriter effect
+  const typeText = "Hi 👋 — I'm a creative front-end developer: 3D CSS, interactive UI, performance-first apps.";
+  let idx=0;
+  function typeWriter(){
+    const el = document.getElementById('typewriter');
+    if (!el) return;
+    if (idx < typeText.length) {
+      el.innerHTML += typeText[idx++];
+      setTimeout(typeWriter, 28);
+    } else {
+      // small glow on hero title when done
+      document.getElementById('heroTitle').style.textShadow = '0 12px 30px rgba(0,0,0,0.6)';
+    }
+  }
+
+  // gallery tilt: use mouse position to tilt slightly
+  function attachTilt(el){
+    const rect = el.getBoundingClientRect();
+    el.addEventListener('mousemove', e=>{
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      const rx = (y - 0.5) * -8; // rotateX
+      const ry = (x - 0.5) * 12; // rotateY
+      el.style.transform = `translateZ(12px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.03)`;
+      el.style.boxShadow = '0 18px 48px rgba(0,0,0,0.55)';
+    });
+    el.addEventListener('mouseleave', ()=> {
+      el.style.transform = '';
+      el.style.boxShadow = '0 6px 20px rgba(0,0,0,0.45)';
+    });
+    // click to enlarge example (replace with modal or link)
+    el.addEventListener('click', ()=>{
+      const title = el.getAttribute('data-title') || 'Project';
+      alert('Open project: ' + title + ' — implement modal or link to project page.');
+    });
+  }
+
+  // animate skill bars
+  function animateBars(){
+    const bars = $all('.bar');
+    bars.forEach(b=>{
+      const w = b.getAttribute('data-fill') || '80%';
+      b.style.transition = 'width 1.6s cubic-bezier(.2,.9,.3,1)';
+      setTimeout(()=> b.style.width = w, 120);
+    });
+  }
+
+  // random fun facts
+  const funFacts = [
+    "💡 JavaScript was created in just 10 days!",
+    "🎨 Good UI reduces cognitive load — make users feel smart.",
+    "⚡ Use transforms (GPU) for performant animations, not top/left.",
+    "🧠 Prefetch critical assets to speed first interaction.",
+    "🌈 3D CSS uses perspective + transform-style: preserve-3d."
+  ];
+  function randomFun(){ document.getElementById('funText').innerText = funFacts[Math.floor(Math.random()*funFacts.length)]; }
+
+  // mobile menu toggle
+  const menuToggle = document.getElementById('menuToggle');
+  menuToggle.addEventListener('click', ()=>{
+    const sb = document.getElementById('sidebar');
+    sb.classList.toggle('active');
+    const i = menuToggle.querySelector('i');
+    i.classList.toggle('fa-bars'); i.classList.toggle('fa-times');
+  });
+
+  // attach tilt to gallery items
+  document.addEventListener('DOMContentLoaded', ()=>{
+    $all('.gallery-item').forEach(attachTilt);
+    // bind nav anchors showSection mapping
+    $all('.nav a').forEach(a=>{
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        const label = this.textContent.trim().split(/\s/)[0].toLowerCase();
+        // map label to id (robust matching)
+        const mapping = {overview:'overview', gallery:'gallery', services:'services', skills:'skills', resume:'resume', contact:'contact', fun:'fun', blog:'blog'};
+        const id = mapping[label] || 'overview';
+        showSection(id, this);
+      });
+    });
+
+    // show default sections (hide all except overview)
+    $all('section.card').forEach(s => s.classList.remove('active'));
+    document.getElementById('overview').classList.add('active');
+
+    // small keyboard nav: numbers 1..8 open sections
+    window.addEventListener('keydown', (e)=>{
+      if (e.key >= '1' && e.key <= '9') {
+        const idx = parseInt(e.key,10);
+        const anchors = $all('.nav a');
+        if (anchors[idx-1]) { anchors[idx-1].click(); }
+      }
+    });
+
+    // typewriter start
+    setTimeout(typeWriter, 520);
+
+    // animate cube on pointer move for subtle interaction
+    const cube = document.getElementById('cube');
+    if (cube) {
+      document.addEventListener('pointermove', (ev)=>{
+        const cx = window.innerWidth/2, cy = window.innerHeight/2;
+        const rx = ((ev.clientY - cy)/cy) * 8; // rotateX
+        const ry = ((ev.clientX - cx)/cx) * 12; // rotateY
+        cube.style.transform = `rotateX(${ -14 + rx }deg) rotateY(${ 26 + ry }deg)`;
+      });
+    }
+  });
+
+  // helper scroll to section
+  function scrollToSection(id) {
+    showSection(id, findNav(id));
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  </script>
+</body>
+</html>
